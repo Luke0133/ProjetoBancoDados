@@ -118,21 +118,18 @@ CREATE TABLE TB_Extensao(
 );
 
 CREATE TABLE TB_FeedbackPessoa(
-	CodPessoa char(11) NOT NULL,
-	CodFeedback serial NOT NULL,
-	PRIMARY KEY(CodPessoa,CodFeedback)
+	CodFeedback serial PRIMARY KEY,
+	CodPessoa char(11) NOT NULL
 );
 
 CREATE TABLE TB_FeedbackDocente(
-	CodDocente char(11) NOT NULL,
-	CodFeedback serial NOT NULL,
-	PRIMARY KEY(CodDocente,CodFeedback)
+	CodFeedback serial PRIMARY KEY,
+	CodDocente char(11) NOT NULL
 );
 
 CREATE TABLE TB_FeedbackAluno(
-	CodAluno char(9) NOT NULL,
-	CodFeedback serial NOT NULL,
-	PRIMARY KEY(CodAluno,CodFeedback)
+	CodFeedback serial PRIMARY KEY,
+	CodAluno char(9) NOT NULL
 );
 
 CREATE TABLE TB_Feedback(
