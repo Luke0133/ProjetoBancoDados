@@ -1,5 +1,6 @@
 CREATE TYPE Tipo_Acao AS ENUM('Curso','Evento','Projeto');
 CREATE TYPE Tipo_Local AS ENUM('Campus','Escola','Outro');
+CREATE TYPE Tipo_Estado AS ENUM('Deferido','Indeferido','Em Espera');
 
 CREATE TABLE TB_Materia(
 	CodMateria SERIAL PRIMARY KEY,
@@ -79,6 +80,7 @@ CREATE TABLE TB_FuncaoPessoa(
 	CodPessoa char(11) NOT NULL,
 	CodExt char(10) NOT NULL,
 	Funcao varchar(50),
+	EstadoInscricao Tipo_Estado,
 	PRIMARY KEY(CodPessoa,CodExt)
 );
 
@@ -86,6 +88,7 @@ CREATE TABLE TB_FuncaoDocente(
 	CodDocente char(11) NOT NULL,
 	CodExt char(10) NOT NULL,
 	Funcao varchar(50),
+	EstadoInscricao Tipo_Estado,
 	PRIMARY KEY(CodDocente,CodExt)
 );
 
@@ -93,6 +96,7 @@ CREATE TABLE TB_FuncaoAluno(
 	CodAluno char(9) NOT NULL,
 	CodExt char(10) NOT NULL,
 	Funcao varchar(50),
+	EstadoInscricao Tipo_Estado,
 	PRIMARY KEY(CodAluno,CodExt)
 );
 
