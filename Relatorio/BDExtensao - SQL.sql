@@ -112,6 +112,7 @@ CREATE TABLE TB_Extensao(
 	CodLocal serial NOT NULL,
 	Titulo varchar(200) NOT NULL,
 	TipoAcao Tipo_Acao NOT NULL,
+	Descricao varchar(2000) NOT NULL,
 	AreaTematica varchar(200) NOT NULL,
 	PublicoInternoEst integer NOT NULL,
 	PublicoExternoEst integer NOT NULL,
