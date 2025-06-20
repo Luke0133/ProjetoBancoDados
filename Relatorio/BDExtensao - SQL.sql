@@ -1,3 +1,5 @@
+PRAGMA foreign_keys = ON;
+
 CREATE TABLE TB_Departamento (
     CodDep INTEGER PRIMARY KEY AUTOINCREMENT,
     Nome TEXT
