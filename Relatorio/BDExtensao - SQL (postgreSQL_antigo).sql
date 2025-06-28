@@ -54,10 +54,10 @@ CREATE TABLE TB_Docente(
 
 CREATE TABLE TB_HistoricoAluno(
 	CodAluno char(11) NOT NULL,
-	CodCurso serial NOT NULL,
+	CodMateria serial NOT NULL,
 	Semestre integer NOT NULL,
 	Mencao char(2) NOT NULL,
-	PRIMARY KEY(CodAluno, CodCurso, Semestre)
+	PRIMARY KEY(CodAluno, CodMateria, Semestre)
 );
 
 CREATE TABLE TB_Aluno(
@@ -191,8 +191,8 @@ REFERENCES TB_Departamento(CodDep);
 ALTER TABLE TB_HistoricoAluno
 ADD FOREIGN KEY(CodAluno)
 REFERENCES TB_Aluno(Matricula),
-ADD FOREIGN KEY(CodCurso)
-REFERENCES TB_Curso(CodCurso);
+ADD FOREIGN KEY(CodMateria)
+REFERENCES TB_Materia(CodMateria);
 
 ALTER TABLE TB_Aluno
 ADD FOREIGN KEY(CodCurso)
