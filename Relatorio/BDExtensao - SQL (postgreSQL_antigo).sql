@@ -152,7 +152,7 @@ CREATE TABLE TB_Local(
 	Estado char(2) NOT NULL,
 	Municipio varchar(50) NOT NULL,
 	Bairro varchar(50) NOT NULL,
-	Complemento varchar(100) NOT NULL
+	Complemento varchar(100)
 );
 
 CREATE TABLE TB_Foto(
