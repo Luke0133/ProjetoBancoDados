@@ -22,10 +22,10 @@ x = user.Aluno()
 
 def loginProcess():
     os.system('cls')
-    print("Selecione seu perfil:\n1 - Docente\n2 - Aluno\n3 - Colaborador\n4 - Admin\n0 - Sair")
+    print("Selecione seu perfil:\n1 - Docente\n2 - Aluno\n3 - Colaborador\n0 - Sair")
     while True:
         select = input()
-        if select in "01234":
+        if select in "0123":
             break
         else:
             print("Valor de seleção errado")
@@ -96,17 +96,3 @@ def loginProcess():
                 break
             else:
                 print("Erro em algum dos campos")
-
-    elif select == "4":
-        os.system('cls')
-        print("Digite a senha de admin")
-        print("Digite 'sair' para encerrar o programa")
-        while True:
-            senha = input()
-            if senha == "adminext":
-                break
-            elif senha == "sair":
-                print("Programa encerrado")
-                break
-            else:
-                print("senha incorreta")
