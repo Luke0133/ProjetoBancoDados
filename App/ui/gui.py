@@ -18,10 +18,6 @@ database_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'd
 if database_path not in sys.path:
     sys.path.append(database_path)
 
-database_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'db'))
-if database_path not in sys.path:
-    sys.path.append(database_path)
-
 import usuario as user
 import database as db
 from extensao import Local
