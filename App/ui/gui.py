@@ -1,5 +1,8 @@
+import psycopg2
 import sys
 import os
+import tempfile
+import platform
 
 # Caminho para a pasta 'classes'
 classes_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'classes'))
@@ -15,8 +18,13 @@ database_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'd
 if database_path not in sys.path:
     sys.path.append(database_path)
 
+database_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'db'))
+if database_path not in sys.path:
+    sys.path.append(database_path)
+
 import usuario as user
 import database as db
+from extensao import Local
 
 x = user.Aluno()
 
@@ -170,7 +178,8 @@ def verifLocal(nome,tipo,estado,municipio,bairro,complemento = None):
     else:
         tam = len(auxlocal)
         if tam == 1:
-            return auxlocal
+            local = Local(auxlocal[0]["codlocal"],auxlocal[0]["nome"],auxlocal[0]["tipo"],[auxlocal[0]["estado"],auxlocal[0]["municipio"],auxlocal[0]["bairro"],auxlocal[0]["complemento"]],auxlocal[0]["estado"],auxlocal[0]["municipio"],auxlocal[0]["bairro"],auxlocal[0]["complemento"])
+            return local
         else:
             count = 0
             for i in auxlocal:
@@ -184,4 +193,44 @@ def verifLocal(nome,tipo,estado,municipio,bairro,complemento = None):
                 if (sel.isdigit() == False or int(sel) > count or int(sel) == 0):
                     print("Valor de seleção errado")
                 else:
-                    return auxlocal[sel-1]
+                    aux = sel-1
+                    local = Local(auxlocal[aux]["codlocal"],auxlocal[aux]["nome"],auxlocal[aux]["tipo"],[auxlocal[aux]["estado"],auxlocal[aux]["municipio"],auxlocal[aux]["bairro"],auxlocal[aux]["complemento"]],auxlocal[aux]["estado"],auxlocal[aux]["municipio"],auxlocal[aux]["bairro"],auxlocal[aux]["complemento"])
+                    return local
+
+def addFoto(codext):
+    ext = db.comandoSQL(f"SELECT * FROM tb_extensao WHERE codext = '{codext}'")
+    if not ext:
+        print("Erro: Extensao nao existente")
+    else:
+        print("Descriçao da foto: ")
+        desc = input()
+        print("Digite o caminho da imagem: ")
+        fotopath = input().strip()
+        if not os.path.isfile(fotopath):
+            print("Erro: Arquivo não encontrado. Verifique o caminho e tente novamente.")
+            return
+        try:
+            with open(fotopath, 'rb') as f:
+                fotobin = f.read()
+            print(psycopg2.Binary(fotobin))
+            db.comandoSQL(f"INSERT INTO tb_foto (codext, descricao, foto) VALUES ('{codext}', '{desc}', {psycopg2.Binary(fotobin)})")
+        except Exception as e:
+            print("Ocorreu um erro:", e)
+
+def verImagem(codext):
+    img = db.comandoSQL(f"SELECT * FROM tb_foto WHERE codext = '{codext}'")
+    try:
+        dados_imagem = img[0][3]
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(codext)[1]) as tmp_file:
+            tmp_file.write(dados_imagem)
+            caminho_temp = tmp_file.name
+
+        print(f"Imagem salva temporariamente em: {caminho_temp}")
+
+        sistema = platform.system()
+        if sistema == "Windows":
+            os.startfile(caminho_temp)
+
+    except Exception as e:
+        print("Erro:", e)
