@@ -96,3 +96,89 @@ def loginProcess():
                 break
             else:
                 print("Erro em algum dos campos")
+
+#Foto e local
+def verifLocal(nome,tipo,estado,municipio,bairro,complemento = None):
+    auxlocal = db.comandoSQL(f"SELECT * FROM tb_local WHERE nome = '{nome}' or nome = '{tipo}' or estado = '{estado}' or municipio = '{municipio}' or bairro = '{bairro}'")
+    if auxlocal == []:
+        print("Nenhum local encontrado")
+        sn = input("Deseja adicionar um local? (S para sim, N para não): ")
+        if sn.lower() == 's':
+            while True:
+                print("Digite 'sair' no campo 'Nome' para cancelar")
+                while True:
+                    nome = input("Nome: ")
+                    if nome == "sair":
+                        break
+                    elif len(nome) > 100:
+                        print("Erro: Nome com mais de 100 caracteres")
+                        continue
+                    else:
+                        break
+                if nome == "sair":
+                        break
+                while True:
+                    tipo = input("Tipo ('Campus','Escola','Outro'): ")
+                    if tipo not in ["Campus","Escola","Outro"]:
+                        print("Erro: 'tipo' deve ser um dos três: Campus, Escola, Outro")
+                        continue
+                    else:
+                        break
+                while True:
+                    estado = input("Estado (sigla): ")
+                    if len(estado) != 2:
+                        print("Erro: Sigla de estado do formato errado")
+                        continue
+                    else:
+                        break
+                while True:
+                    municipio = input("Municipio: ")
+                    if len(municipio) > 50:
+                        print("Erro: Nome de municipio com mais de 50 caracteres")
+                        continue
+                    else:
+                        break
+                while True:
+                    bairro = input("Bairro: ")
+                    if len(bairro) > 50:
+                        print("Erro: Nome de bairro com mais de 50 caracteres")
+                        continue
+                    else:
+                        break
+                while True:
+                    complemento = input("Complemento (digite 'sem' se não quiser adicionar complemento): ")
+                    if complemento == "sem":
+                        complemento = None
+                        break
+                    elif len(complemento) > 100:
+                        print("Erro: Complemento com mais de 100 caracteres")
+                        continue
+                    else:
+                        break
+                break
+            if complemento != None:
+                db.comandoSQL(f'''INSERT INTO tb_local (nome, tipo, estado, municipio, bairro, complemento) 
+                              values ('{nome}','{tipo}','{estado}','{municipio}','{bairro}','{complemento}')
+                              ''')
+            else:
+                db.comandoSQL(f'''INSERT INTO tb_local (nome, tipo, estado, municipio, bairro)
+                               values ('{nome}','{tipo}','{estado}','{municipio}','{bairro}')
+                               ''')    
+    else:
+        tam = len(auxlocal)
+        if tam == 1:
+            return auxlocal
+        else:
+            count = 0
+            for i in auxlocal:
+                count += 1
+                print(f"{count} - {i["nome"]} | {i["tipo"]} | {i["estado"]} | {i["municipio"]} | {i["bairro"]}")
+                if i["complemento"] != None:
+                    print(f"Complemento: {i["complemento"]}")
+            print("Escolha um local")
+            while True:
+                sel = input("Digite: ")
+                if (sel.isdigit() == False or int(sel) > count or int(sel) == 0):
+                    print("Valor de seleção errado")
+                else:
+                    return auxlocal[sel-1]
