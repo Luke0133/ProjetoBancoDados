@@ -99,7 +99,10 @@ def loginProcess():
 
 #Foto e local
 def verifLocal(nome,tipo,estado,municipio,bairro,complemento = None):
-    auxlocal = db.comandoSQL(f"SELECT * FROM tb_local WHERE nome = '{nome}' or nome = '{tipo}' or estado = '{estado}' or municipio = '{municipio}' or bairro = '{bairro}'")
+    auxlocal = db.comandoSQL(f'''SELECT * FROM tb_local 
+                             WHERE nome = '{nome}' or nome = '{tipo}' or estado = '{estado}' 
+                             or municipio = '{municipio}' or bairro = '{bairro}'
+                             ''')
     if auxlocal == []:
         print("Nenhum local encontrado")
         sn = input("Deseja adicionar um local? (S para sim, N para não): ")
