@@ -1,4 +1,4 @@
-from domains import *
+from classes.domains import *
 
 # Entidades relacionadas à extensão
 # - Extensao
@@ -8,27 +8,52 @@ from domains import *
 
 class Extensao:
     def __init__(self, codExt=None, codLocal=None, titulo=None, tipo=None, 
-                 area=None, desc=None, pubIntEst=None,pubExtEst=None,pubInt=None,
-                 pubExt=None, dataInicio=None, dataFim=None):
+                 descricao=None, areaTematica=None, publicoInternoEstimado=None,publicoExternoEstimado=None,publicoInterno=None,
+                 publicoExterno=None, inicioRealizacao=None, fimRealizacao=None):
         self.codExt = codExt
         self.codLocal = codLocal
         self.titulo = titulo
         self.tipo = tipo
-        self.area = area
-        self.desc = desc
-        self.pubIntEst = pubIntEst
-        self.pubExtEst = pubExtEst
-        self.pubInt = pubInt
-        self.pubExt = pubExt
-        self.dataInicio = Data(dataInicio)
-        self.dataFim = Data(dataFim)       
+        self.descricao = descricao
+        self.areaTematica = areaTematica
+        self.publicoInternoEstimado = publicoInternoEstimado
+        self.publicoExternoEstimado = publicoExternoEstimado
+        self.publicoInterno = publicoInterno
+        self.publicoExterno = publicoExterno
+        self.inicioRealizacao = Data(inicioRealizacao)
+        self.fimRealizacao = Data(fimRealizacao)       
 
     def get(self):
         return [self.codExt, self.codLocal, self.titulo,
-                self.tipo, self.area, self.desc, self.pubIntEst,
-                self.pubExtEst, self.pubInt, self.pubExt,
-                self.dataInicio, self.dataFim]
+                self.tipo, self.descricao, self.areaTematica, self.publicoInternoEstimado,
+                self.publicoExternoEstimado, self.publicoInterno, self.publicoExterno,
+                self.inicioRealizacao, self.fimRealizacao]
     
+    def getCodExt(self): 
+        return self.codExt
+    def getCodLocal(self): 
+        return self.codLocal
+    def getTitulo(self):
+        return self.titulo
+    def getTipoAcao(self):
+        return self.tipo
+    def getDescricao(self):
+        return self.descricao
+    def getAreaTematica(self):
+        return self.areaTematica
+    def getPublicoInternoEst(self):
+        return self.publicoInternoEstimado
+    def getPublicoExternoEst(self):
+        return self.publicoExternoEstimado
+    def getPublicoInterno(self):
+        return self.publicoInterno
+    def getPublicoExterno(self):
+        return self.publicoExterno
+    def getInicioRealizacao(self):
+        return self.inicioRealizacao
+    def getFimRealizacao(self):
+        return self.fimRealizacao
+
     def setCodExt(self,aux):
         self.codExt = aux
         
@@ -42,40 +67,40 @@ class Extensao:
         self.tipo = aux
     
     def setArea(self,aux):
-        self.area = aux
+        self.areaTematica = aux
     
     def setDesc(self,aux):
-        self.desc = aux
+        self.descricao = aux
     
     def setPubIntEst(self,aux):
         if int(aux) == aux and aux > 0:
-            self.pubIntEst = aux
+            self.publicoInternoEstimado = aux
         else:
             print("Publico deve ser um inteiro positivo")
 
     def setPubExtEst(self,aux):
         if int(aux) == aux and aux > 0:
-            self.pubExtEst = aux
+            self.publicoExternoEstimado = aux
         else:
             print("Publico deve ser um inteiro positivo")
 
     def setPubInt(self,aux):
         if int(aux) == aux and aux > 0:
-            self.pubInt = aux
+            self.publicoInterno = aux
         else:
             print("Publico deve ser um inteiro positivo")
 
     def setPubExt(self,aux):
         if int(aux) == aux and aux > 0:
-            self.pubExt = aux
+            self.publicoExterno = aux
         else:
             print("Publico deve ser um inteiro positivo")
     
     def setDataInicio(self,aux):
-        self.dataInicio.set(aux)
+        self.inicioRealizacao.set(aux)
         
     def setDataFim(self,aux):
-        self.dataFim.set(aux)
+        self.fimRealizacao.set(aux)
 
     def __repr__(self):
         return f"{self.codExt}"
@@ -103,25 +128,39 @@ class SituacaoExt:
         return f"Situação {self.situacao} - {self.dataSit}"
     
 class Local:
-    def __init__(self, codLocal = None, nome = None, tipo = None, endereco = None, estado = None, municipio = None, bairro = None, complemento = None):
+    def __init__(self, codLocal = None, nome = None, tipo = None, estado = None, municipio = None, bairro = None, complemento = None):
         self.codLocal = codLocal
         self.nome = Nome(nome)
         self.tipo = tipo
-        self.endereco = endereco
         self.estado = estado
         self.municipio = municipio
         self.bairro = bairro
         self.complemento = complemento
     
+    
     def getAll(self):
         return [self.codLocal,
         self.nome,
         self.tipo,
-        self.endereco,
         self.estado,
         self.municipio,
         self.bairro,
         self.complemento]
+    
+    def getCodLocal(self):
+        return self.codLocal
+    def getNome(self):
+        return self.nome
+    def getTipo(self):
+        return self.tipo
+    def getEstado(self):
+        return self.estado
+    def getMunicipio(self):
+        return self.municipio
+    def getBairro(self):
+        return self.bairro
+    def getComplemento(self):
+        return self.complemento
     
     def setCodLocal(self, cod):
         self.codLocal = cod
@@ -129,8 +168,6 @@ class Local:
         self.nome.set(nome)
     def setTipo(self, tipo):
         self.tipo = tipo
-    def setEndereco(self, endereco):
-        self.endereco = endereco
     def setEstado(self, estado):
         self.estado = estado
     def setMunicipio(self, municipio):
@@ -144,15 +181,30 @@ class Local:
         return f"{self.nome}"
 
 class Feedback:
-    def __init__(self, codFeedback=None, data=None, comentario=None, nota=None):
+    def __init__(self, codFeedback=None, data=None, comentario=None, nota=None, autor=None, funcao=None):
         self.codFeedback = codFeedback
         self.data = Data(data)
         self.comentario = comentario
         self.nota = nota
+        self.autor = autor
+        self.funcao = funcao
 
     def get(self):
-        return [self.codFeedback, self.data, self.comentario, self.nota]
-    
+        return [self.codFeedback, self.data, self.comentario, self.nota, self.autor, self.funcao]
+    def getCod(self):
+        self.codFeedback
+    def getData(self):
+        return self.data
+    def getComentario(self):
+        return self.comentario
+    def getAutor(self):
+        return self.autor
+    def getFunçao(self):
+        return self.funcao
+
+    def getNota(self):
+        return self.nota
+
     
     def setCod(self,aux):
         self.codFeedback = aux

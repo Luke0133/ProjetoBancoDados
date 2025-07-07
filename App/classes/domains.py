@@ -5,6 +5,8 @@
 # - Data
 # - Senha
 
+import datetime
+
 class Nome:
     def __init__(self, nome=None):
         self.nome = nome
@@ -20,7 +22,7 @@ class Nome:
             print("Nome possui caracteres nao permitidos ou e maior do que 100 caracteres")
 
     def __repr__(self):
-        return self.nome
+        return f'{self.nome}'
 
 class Email:
     def __init__(self, email=None):
@@ -34,10 +36,10 @@ class Email:
         if (("@" in email) and len(email) <= 100):
             self.email = email
         else:
-            print("Nao e um email valido ou e maior do que 100 caracteres")
+            raise ValueError("Email no formato inválido")
 
     def __repr__(self):
-        return self.email
+        return f'{self.email}'
 
 class Cpf: 
     def __init__(self, cpf = None):
@@ -53,26 +55,29 @@ class Cpf:
             self.cpf = cpf
 
     def __repr__(self):
-        return self.cpf
+        return f'{self.cpf}'
     
 class Data:
     def __init__(self, data = None):
-        self.data = data
+        if str(data) == data:
+            self.setData(data)
+        else:
+            self.data = data
     
     def getData(self):
         return self.data
 
     def setData(self, data):
-        data2 = data.split('-')
+        data2 = data.split('/')
         if (len(data2) != 3):
-            print("Formato invalido, coloque no formato DD-MM-YYYY, incluindo o caracter '-' ")
+            print("Formato invalido, coloque no formato DD/MM/YYYY, incluindo o caracter '/' ")
             return
         dd, mm, yyyy = data2
         if not dd.isdigit() or not mm.isdigit() or not yyyy.isdigit():
-            print("Coloque apenas caracteres numericos intercalados com '-', por exemplo, 24-07-2025")
+            print("Coloque apenas caracteres numericos intercalados com '/', por exemplo, 24/07/2025")
             return
         if len(dd) != 2 or len(mm) != 2 or len(yyyy) != 4:
-            print("Formato invalido, coloque o dia e o mes com dois digitos e o ano com quatro digitos, exemplo: 03-07-1970")
+            print("Formato invalido, coloque o dia e o mes com dois digitos e o ano com quatro digitos, exemplo: 03/07/1970")
             return
         
         dd2 = int(dd)
@@ -96,10 +101,10 @@ class Data:
             print("Data invalida")
             return
         
-        self.data = data
+        self.data = datetime.datetime(int(data[6:]), int(data[3:5]), int(data[:2]))
     
     def __repr__(self):
-        return f"{self.data}"
+        return self.data.strftime("%d/%m/%Y")
     
 
 
@@ -117,4 +122,4 @@ class Senha:
             self.senha = senha
 
     def __repr__(self):
-        return self.senha
+        return f'{self.senha}'

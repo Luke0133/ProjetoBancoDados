@@ -1,4 +1,4 @@
-from domains import *
+from classes.domains import *
 
 # Entidades relacionadas aos usuários
 # - Aluno
@@ -6,18 +6,35 @@ from domains import *
 # - Pessoa
 
 class Aluno:
-    def __init__(self, matricula=None, nome=None, senha=None, cpf=None, ira=None, dataIngresso=None, semestre=None, emails=[]):
+    def __init__(self, matricula=None, codCurso=None, nome=None, cpf=None, senha=None,  ira=None, dataIngresso=None, semestre=None):
         self.matricula = matricula
-        self.nome = Nome(nome)
-        self.senha = Senha(senha)
+        self.codCurso = codCurso
+        self.nome = nome
         self.cpf = Cpf(cpf)
+        self.senha = senha
         self.ira = ira
         self.dataIngresso = Data(dataIngresso)
-        self.semestre = semestre
-        self.emails = emails
-    
+        self.semestreAtual = semestre
+        
+        
     def getAll(self):
-        return [self.matricula,self.nome,self.senha,self.cpf,self.ira,self.dataIngresso,self.semestre,self.emails]
+        return [self.matricula,self.codCurso,self.nome,self.cpf,self.senha,self.ira,self.dataIngresso,self.semestreAtual]
+    def getMatricula(self):
+        return self.matricula
+    def getCodCurso(self):
+        return self.codCurso
+    def getNome(self):
+        return self.nome
+    def getSenha(self):
+        return self.senha
+    def getCpf(self):
+        return self.cpf
+    def getIra(self):
+        return self.ira
+    def getDataIngresso(self):
+        return self.dataIngresso
+    def getSemestreAtual(self):
+        return self.semestreAtual
     
     def setMatricula(self,aux):
         aux = str(aux)
@@ -27,7 +44,7 @@ class Aluno:
             print("Matricula no formato errado")
 
     def setNome(self,aux):
-        self.nome.set(aux)
+        self.nome = aux
 
     def setSenha(self,aux):
         self.senha.set(aux)
@@ -41,44 +58,38 @@ class Aluno:
         else:
             print("IRA deve ser entre 0 e 5")
     
-    def setData(self,aux):
-        self.data.set(aux)
+    def setDataIngresso(self,aux):
+        self.dataIngresso.set(aux)
     
-    def setSemestre(self,aux):
+    def setSemestreAtual(self,aux):
         if int(aux) == aux and aux > 0:
-            self.semestre = aux
+            self.semestreAtual = aux
         else:
             print("Semestre deve ser um inteiro positivo")
-    
-    def setEmails(self,aux):
-        self.emails = aux
-
-    def addEmail(self, aux):
-        if isinstance(aux, Email):
-            email = aux
-        else:
-            email = Email()
-            email.set(aux)
-            
-        if not self.emails:
-            self.emails = [email]
-        else:
-            self.emails.append(email)
 
     def __repr__(self):
         return f"Aluno {self.matricula} - {self.nome}"
     
 class Docente:
-    def __init__(self, matricula=None, nome=None, senha=None, cpf=None, codDep=None, emails = []):
+    def __init__(self, matricula=None, codDep=None, nome=None, senha=None, cpf=None):
         self.matricula = matricula
-        self.nome = Nome(nome)
+        self.codDep = codDep
+        self.nome = nome
         self.senha = Senha(senha)
         self.cpf = Cpf(cpf)
-        self.codDep = codDep
-        self.emails = emails
     
     def getAll(self):
-        return [self.matricula,self.nome,self.senha,self.cpf,self.codDep,self.emails]
+        return [self.matricula,self.codDep,self.nome,self.senha,self.cpf]
+    def getMatricula(self):
+        return self.matricula
+    def getCodDep(self):
+        return self.codDep
+    def getNome(self):
+        return self.nome
+    def getSenha(self):
+        return self.senha
+    def getCpf(self):
+        return self.cpf
     
     def setMatricula(self,aux):
         aux = str(aux)
@@ -88,10 +99,10 @@ class Docente:
             print("Matricula no formato errado")
 
     def setNome(self,aux):
-        self.nome.set(aux)
+        self.nome = aux
 
     def setSenha(self,aux):
-        self.senha.set(aux)
+        self.senha = aux
 
     def setCpf(self,aux):
         self.cpf.set(aux)
@@ -99,57 +110,34 @@ class Docente:
     def setCodDep(self,aux):
         self.codDep = aux
     
-    def setEmails(self,aux):
-        self.emails = aux
-
-    def addEmail(self, aux):
-        if isinstance(aux, Email):
-            email = aux
-        else:
-            email = Email()
-            email.set(aux)
-            
-        if not self.emails:
-            self.emails = [email]
-        else:
-            self.emails.append(email)
 
     def __repr__(self):
         return f"Docente {self.matricula} - {self.nome}"
     
 class Pessoa:
-    def __init__(self, cpf = None, nome = None, senha = None, emails = []):
+    def __init__(self, cpf = None, nome = None, senha = None):
         self.cpf = Cpf(cpf)
-        self.nome = Nome(nome)
-        self.senha = Senha(senha)
-        self.emails = emails
+        self.nome = nome
+        self.senha = senha
+    
     
     def getAll(self):
-        return [self.cpf, self.nome, self.senha, self.emails]
+        return [self.cpf, self.nome, self.senha]
+    def getCpf(self):
+        return self.cpf
+    def getNome(self):
+        return self.nome
+    def getSenha(self):
+        return self.senha
     
     def setCpf(self, cpf):
         self.cpf.set(cpf)
         
-    def setNome(self, nome):
-        self.nome.set(nome)
+    def setNome(self,aux):
+        self.nome = aux
         
     def setSenha(self, senha):
-        self.senha.set(senha)
-    
-    def setEmails(self,aux):
-        self.emails = aux
-
-    def addEmail(self, aux):
-        if isinstance(aux, Email):
-            email = aux
-        else:
-            email = Email()
-            email.set(aux)
-            
-        if not self.emails:
-            self.emails = [email]
-        else:
-            self.emails.append(email)
+        self.senha = senha
         
     def __repr__(self):
         return f"Pessoa {self.cpf} - {self.nome}"
