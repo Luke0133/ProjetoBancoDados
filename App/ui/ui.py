@@ -283,3 +283,41 @@ def verImagem(codext):
 
     except Exception as e:
         print("Erro:", e)
+
+
+#funcoes curriculo
+def addCurriculo(cpf):
+    pessoa = db.comandoSQL(f"SELECT * FROM tb_pessoa WHERE cpf = '{cpf}'")
+    if not pessoa:
+        print("Erro: Pessoa nao existente")
+    else:
+        print("Insira o caminho do arquivo pdf: ")
+        pdfpath = input().strip()
+        if not os.path.isfile(pdfpath):
+            print("Erro: Arquivo não encontrado. Verifique o caminho e tente novamente.")
+            return
+        try:
+            with open(pdfpath, 'rb') as f:
+                pdfbin = f.read()
+            print(psycopg2.Binary(pdfbin))
+            db.comandoSQL(f"UPDATE tb_pessoa SET curriculo = {psycopg2.Binary(pdfbin)} WHERE cpf = '{cpf}'")
+        except Exception as e:
+            print("Ocorreu um erro:", e)
+
+def verCurriculo(cpf):
+    curriculo = db.comandoSQL(f"SELECT * FROM tb_pessoa WHERE cpf = '{cpf}'")
+    try:
+        dados_curriculo = curriculo[0][3]
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(cpf)[1]) as tmp_file:
+            tmp_file.write(dados_curriculo)
+            caminho_temp = tmp_file.name
+
+        print(f"Imagem salva temporariamente em: {caminho_temp}")
+
+        sistema = platform.system()
+        if sistema == "Windows":
+            os.startfile(caminho_temp)
+
+    except Exception as e:
+        print("Erro:", e)
