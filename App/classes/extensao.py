@@ -107,22 +107,32 @@ class Extensao:
     
 
 class SituacaoExt:
-    def __init__(self, codExt=None, dataSit=None, situacao=None):
+    def __init__(self, codExt=None, dataSit=None, horarioSit=None, situacao=None):
         self.codExt = codExt
         self.dataSit = Data(dataSit)
+        self.horarioSit = horarioSit
         self.situacao = situacao
 
     def get(self):
-        return [self.codExt, self.dataSit, self.situacao]
+        return [self.codExt, self.dataSit, self.horarioSit, self.situacao]
     
-    def getSit(self):
+    def getCodExt(self):
+        return self.codExt
+    def getSituacao(self):
         return self.situacao
-    
+    def getDataSit(self):
+        return self.dataSit
+    def getHorarioSit(self):
+        return self.horarioSit
+
     def setCodExt(self,aux):
         self.codExt = aux
-
-    def setData(self,aux):
+    def setSituacao(self,aux):
+        self.situacao = aux
+    def setDataSit(self,aux):
         self.dataSit.set(aux)
+    def setHorarioSit(self,aux):
+        self.horarioSit = aux
 
     def __repr__(self):
         return f"Situação {self.situacao} - {self.dataSit}"
@@ -130,7 +140,7 @@ class SituacaoExt:
 class Local:
     def __init__(self, codLocal = None, nome = None, tipo = None, estado = None, municipio = None, bairro = None, complemento = None):
         self.codLocal = codLocal
-        self.nome = Nome(nome)
+        self.nome = nome
         self.tipo = tipo
         self.estado = estado
         self.municipio = municipio
@@ -165,7 +175,7 @@ class Local:
     def setCodLocal(self, cod):
         self.codLocal = cod
     def setNome(self, nome):
-        self.nome.set(nome)
+        self.nome = nome
     def setTipo(self, tipo):
         self.tipo = tipo
     def setEstado(self, estado):

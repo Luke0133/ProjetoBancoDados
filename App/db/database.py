@@ -26,10 +26,7 @@ def comandoSQL(comando):
         cur.execute(comando)
         if comando[:3].lower() == "sel":
             return cur.fetchall()
-        elif comando[:3].lower() == "upd":
-            conn.commit()
-            #print("Valor(es) atualizados com sucesso")
-        elif comando[:3].lower() == "ins":
+        elif comando.strip().lower().startswith(("update", "insert", "delete", "call")):
             if "returning" in comando.lower():
                 result = cur.fetchone()
                 conn.commit()
@@ -37,10 +34,6 @@ def comandoSQL(comando):
             else:
                 conn.commit()
                 return None
-        elif comando[:3].lower() == "del":
-            conn.commit()
-            print("Registro(s) deletado(s) com sucesso")
-            
 
     except Exception as error:
         raise Exception(error)
@@ -50,9 +43,36 @@ def comandoSQL(comando):
         if conn is not None:
             conn.close()
 
+# Cria extensão e retorna o seu código
+def criar_extensao(codLocal, titulo, tipo, descricao, areaTematica, publicoInternoEstimado,
+                   publicoExternoEstimado,publicoInterno,publicoExterno, inicioRealizacao, fimRealizacao):
+    comandoSQL(f"""CALL insert_extensao('{codLocal}', '{titulo}', '{tipo}', '{descricao}','{areaTematica}', {publicoInternoEstimado}, 
+               {publicoExternoEstimado}, '{publicoInterno}', '{publicoExterno}', '{inicioRealizacao}' , '{fimRealizacao}', null, null)""")
+    
+    return comandoSQL(f"""SELECT codext from tb_extensao where CodLocal = '{codLocal}' and Titulo = '{titulo}' and TipoAcao = '{tipo}' and
+                      Descricao = '{descricao}' and AreaTematica = '{areaTematica}' and PublicoInternoEst = {publicoInternoEstimado} and
+                      PublicoExternoEst = {publicoExternoEstimado} and PublicoInterno = '{publicoInterno}'and PublicoExterno = '{publicoExterno}'
+                      and InicioRealizacao = '{inicioRealizacao}' and FimRealizacao = '{fimRealizacao}'""")
 
+# Deleta extensão
+def deletar_extensao(codExt):
+    comandoSQL(f"DELETE FROM TB_Extensao WHERE CodExt = '{codExt}'")
+
+# Atualiza os dados de uma extensão
+def atualizar_extensao(codExt, codLocal, titulo, tipo, descricao, areaTematica, publicoInternoEstimado,
+                   publicoExternoEstimado,publicoInterno,publicoExterno, inicioRealizacao, fimRealizacao):
+    comandoSQL(f"""UPDATE TB_Extensao SET CodLocal = '{codLocal}', Titulo = '{titulo}', TipoAcao = '{tipo}', Descricao = '{descricao}', 
+                AreaTematica = '{areaTematica}', PublicoInternoEst = {publicoInternoEstimado}, PublicoExternoEst = {publicoExternoEstimado},
+                PublicoInterno = '{publicoInterno}', PublicoExterno = '{publicoExterno}', InicioRealizacao = '{inicioRealizacao}',
+                FimRealizacao = '{fimRealizacao}' WHERE CodExt = '{codExt}' """)
+    return
+
+# Retorna todas as extensões
 def get_extensoes():
     return comandoSQL("SELECT * FROM tb_extensao ORDER BY CodExt")
+# Retorna uma extensão
+def get_extensao(codext):
+    return comandoSQL(f"SELECT * FROM tb_extensao WHERE CodExt = '{codext}'")
 
 def get_extensoes_aluno(matricula):
     return comandoSQL(f"""SELECT ext.CodExt, CodLocal, Titulo, TipoAcao, Descricao, AreaTematica, PublicoInternoEst, 
@@ -82,6 +102,33 @@ def get_funcao_docente(codExt,matricula):
     return comandoSQL(f"SELECT * FROM tb_funcaodocente WHERE CodExt = '{codExt}' AND CodDocente = '{matricula}'")
 def get_funcao_pessoa(codExt,cpf):
     return comandoSQL(f"SELECT * FROM tb_funcaopessoa WHERE CodExt = '{codExt}' AND CodPessoa = '{cpf}'")
+
+# Apagam função do usuário
+def deletar_funcao_aluno(codExt,matricula):
+    return comandoSQL(f"DELETE FROM tb_funcaoaluno WHERE CodExt = '{codExt}' AND CodAluno = '{matricula}'")
+def deletar_funcao_docente(codExt,matricula):
+    return comandoSQL(f"DELETE FROM tb_funcaodocente WHERE CodExt = '{codExt}' AND CodDocente = '{matricula}'")
+def deletar_funcao_pessoa(codExt,cpf):
+    return comandoSQL(f"DELETE FROM tb_funcaopessoa WHERE CodExt = '{codExt}' AND CodPessoa = '{cpf}'")
+
+# Cria função do usuário
+def set_funcao_aluno(codExt,codAluno,funcao,estadoinscricao):
+    comandoSQL(f"INSERT INTO tb_funcaoaluno (CodExt, CodAluno,Funcao,EstadoInscricao) VALUES ('{codExt}','{codAluno}',{'NULL' if funcao is None else f"'{funcao}'"},'{estadoinscricao}')")
+def set_funcao_docente(codExt,codDocente,funcao,estadoinscricao):
+    comandoSQL(f"INSERT INTO tb_funcaodocente (CodExt, CodDocente,Funcao,EstadoInscricao) VALUES ('{codExt}','{codDocente}',{'NULL' if funcao is None else f"'{funcao}'"},'{estadoinscricao}')")
+def set_funcao_pessoa(codExt,codPessoa,funcao,estadoinscricao):
+    comandoSQL(f"INSERT INTO tb_funcaopessoa (CodExt, CodPessoa,Funcao,EstadoInscricao) VALUES ('{codExt}','{codPessoa}',{'NULL' if funcao is None else f"'{funcao}'"},'{estadoinscricao}')")
+
+# Atualiza função do usuário
+def update_funcao_aluno(codExt,codAluno,funcao,estadoinscricao):
+    comandoSQL(f"UPDATE tb_funcaoaluno SET Funcao = {'NULL' if funcao is None else f"'{funcao}'"}, EstadoInscricao = '{estadoinscricao}' WHERE CodExt = '{codExt}' AND CodAluno = '{codAluno}'")
+def update_funcao_docente(codExt,codDocente,funcao,estadoinscricao):
+    comandoSQL(f"UPDATE tb_funcaodocente SET Funcao = {'NULL' if funcao is None else f"'{funcao}'"}, EstadoInscricao = '{estadoinscricao}' WHERE CodExt = '{codExt}' AND CodDocente = '{codDocente}'")
+def update_funcao_pessoa(codExt,codPessoa,funcao,estadoinscricao):
+    comandoSQL(f"UPDATE tb_funcaopessoa SET Funcao = {'NULL' if funcao is None else f"'{funcao}'"}, EstadoInscricao = '{estadoinscricao}' WHERE CodExt = '{codExt}' AND CodPessoa = '{codPessoa}'")
+
+
+
 
 # Tenta encontrar aluno e, se encontrar, retorna o aluno
 def get_aluno(id):
@@ -182,6 +229,21 @@ def get_historico(matricula):
 def get_local(codLocal):
     return comandoSQL(f"SELECT * FROM tb_local WHERE codlocal = '{codLocal}'")
 
+# Retorna todos os locais
+def get_locais():
+    return comandoSQL(f"SELECT * FROM tb_local")
+
+# Cria um local e retorna o seu código (com/sem complemento)
+def create_local_complemento(nome,tipo,estado,municipio,bairro,complemento):
+    return comandoSQL(f"""INSERT INTO tb_local (nome, tipo, estado, municipio, bairro, complemento) 
+                          values ('{nome}','{tipo}','{estado}','{municipio}','{bairro}','{complemento}')
+                          RETURNING CodLocal""")
+
+def create_local(nome,tipo,estado,municipio,bairro):
+    return comandoSQL(f"""INSERT INTO tb_local (nome, tipo, estado, municipio, bairro) 
+                          values ('{nome}','{tipo}','{estado}','{municipio}','{bairro}')
+                          RETURNING CodLocal""") 
+                
 # Retorna versão detalhada dos feedbacks
 def get_feedbacks(codExt):
     return comandoSQL(f"SELECT * FROM tb_feedback_detalhado WHERE codExt = '{codExt}'")
@@ -199,3 +261,25 @@ def conectar_feedback_docente(codFeedback,matricula):
 
 def conectar_feedback_pessoa(codFeedback,cpf):
     comandoSQL(f"INSERT INTO TB_FeedbackPessoa (CodFeedback, CodPessoa) VALUES ('{codFeedback}', '{cpf}')")
+
+# Retorna todas as situações de uma determinada extensao
+def get_situacoes(codExt):
+    return comandoSQL(f"SELECT * FROM TB_SituacaoExt WHERE codExt = '{codExt}' ORDER BY DataSit, HorarioSit")
+
+# Retorna todas as situações de uma determinada extensao
+def set_situacao(codExt,situacao):
+    comandoSQL(f"""INSERT INTO TB_SituacaoExt (DataSit, HorarioSit, CodExt, Situacao) VALUES (CURRENT_DATE, CURRENT_TIME, '{codExt}', '{situacao}')""")
+
+# Insere PDF no currículo da pessoa
+def update_curriculo(pdf,cpf):
+    comandoSQL(f"UPDATE tb_pessoa SET curriculo = {pdf} WHERE cpf = '{cpf}'")
+
+def get_curriculo(cpf):
+    return comandoSQL(f"SELECT * FROM tb_pessoa WHERE cpf = '{cpf}'")
+
+def inserir_foto(codExt,desc,foto):
+    comandoSQL(f"INSERT INTO tb_foto (codext, descricao, foto) VALUES ('{codExt}', '{desc}', {foto})")
+
+def get_fotos(codExt):
+    return comandoSQL(f"SELECT * FROM tb_foto WHERE codExt = '{codExt}'")
+

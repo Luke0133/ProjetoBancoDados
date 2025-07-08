@@ -1,4 +1,6 @@
-import os, shutil,math
+import os, shutil, platform, tempfile, math
+
+import psycopg2
 
 from InquirerPy import inquirer
 from InquirerPy.base.control import Choice
@@ -21,6 +23,9 @@ from ui import ui_extensao as uiEx
 # apagar_conta
 # email_detalhes_ui
 # historico_aluno_ui
+# curriculo_ui(id):
+# adicionar_Curriculo(cpf):
+# verCurriculo(cpf):
 
 PERPAGE = 4
 terminal_width = shutil.get_terminal_size().columns
@@ -71,7 +76,7 @@ def ui_usuario(id):
             case 3: err = uiEx.ui_extensoes(usuario,mode='general')
             case 4: err = uiEx.ui_extensoes(usuario,mode='usuario')
             case 5: historico_aluno_ui(usuario.getMatricula())
-            case 6: pass
+            case 6: curriculo_ui(id)
             case _: pass
 
 # Mostra detalhes do usuário
@@ -243,7 +248,7 @@ def apagar_conta(id):
                         input("Pressione ENTER para voltar ao menu de Detalhes de Conta")
                         return False
                 case 2:
-                    print(f'\Sua conta NÃO foi deletada. Processo cancelado')
+                    print(f'\nSua conta NÃO foi deletada. Processo cancelado')
                     input("Pressione ENTER para voltar ao menu de Detalhes de Conta") 
                     return False
                 case _: pass
@@ -403,3 +408,89 @@ def historico_aluno_ui(matricula):
             case 0: return
             case 2: n+=1
             case 3: n-=1
+
+def curriculo_ui(id):
+    mode_text = f"{Fore.YELLOW}(Currículo)"
+    err = None
+    msg = None
+    while(True):
+        os.system('cls')
+        print(Fore.CYAN + banner)
+        print(Fore.CYAN + "=" * terminal_width)
+        print(mode_text.rjust(terminal_width))
+        if msg:
+            print(f'{Fore.LIGHTGREEN_EX}{msg}')
+            msg = None
+        if err:
+            print(f'{Fore.RED}{err}')
+            err = None
+            
+        try:
+            usuario = conUser.get_usuario(id)
+        except ValueError:
+            return
+        
+        if conUser.curriculo_usuario(id):
+            choices= [Choice(value=1, name="Ver Currículo"),
+                    Choice(value=2, name="Trocar Currículo")]
+        else:
+            print("Você ainda não possui um currículo!")
+            choices= [Choice(value=2, name="Adicionar Currículo")]
+        
+        choices.append(Choice(value=0, name="Voltar"))
+
+        choice = inquirer.select(
+            message=f"Escolha uma ação:",
+            choices= choices,
+            qmark="",
+            pointer=">"
+        ).execute()
+
+        match choice:
+            case 0: return
+            case 1: msg, err = verCurriculo(id)
+            case 2: msg = adicionar_Curriculo(id) 
+            case _: pass
+
+def adicionar_Curriculo(cpf):
+    err = None  
+    mode_text = f"{Fore.YELLOW}(Adicionar Currículo)"
+    msg_text = f"{Fore.YELLOW}Digite cancelar para voltar"
+    line1 = msg_text + (" " * (terminal_width - len(mode_text) - len(msg_text))) + mode_text
+    while(True):
+        os.system('cls')
+        print(Fore.CYAN + banner)
+        print(Fore.CYAN + "=" * terminal_width)
+        print(line1)
+        if err:
+            print(f'{Fore.RED}{err}')
+            err = None
+
+
+        pdfpath = input("Digite o caminho do arquivo do seu currículo: ").strip()
+        if pdfpath == 'cancelar': return None
+        if not os.path.isfile(pdfpath): err = "Arquivo não encontrado. Verifique o caminho e tente novamente."
+        else:
+            try:
+                with open(pdfpath, 'rb') as f:
+                    pdfbin = f.read()
+                conUser.criar_curriculo(psycopg2.Binary(pdfbin),cpf)  
+                return "Currículo Adicionado com sucesso!"
+            except Exception as e: err = e
+
+def verCurriculo(cpf):
+    try:
+        dados_curriculo = conUser.curriculo_usuario(cpf)
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(cpf)[1]) as tmp_file:
+            tmp_file.write(dados_curriculo)
+            caminho_temp = tmp_file.name
+        
+        sistema = platform.system()
+        if sistema == "Windows":
+            os.startfile(caminho_temp)
+
+        return (f"Imagem salva temporariamente em: {caminho_temp}",None)
+    
+    except (ValueError,Exception) as e:
+        return (None,e)

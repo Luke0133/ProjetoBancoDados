@@ -70,15 +70,12 @@ class Data:
     def setData(self, data):
         data2 = data.split('/')
         if (len(data2) != 3):
-            print("Formato invalido, coloque no formato DD/MM/YYYY, incluindo o caracter '/' ")
-            return
+            raise ValueError("Formato da data inválido, coloque data no formato DD/MM/YYYY, incluindo o caracter '/' ")
         dd, mm, yyyy = data2
         if not dd.isdigit() or not mm.isdigit() or not yyyy.isdigit():
-            print("Coloque apenas caracteres numericos intercalados com '/', por exemplo, 24/07/2025")
-            return
+            raise ValueError("Formato da data inválido, coloque apenas caracteres numéricos intercalados com '/'. Exemplo, 24/07/2025")
         if len(dd) != 2 or len(mm) != 2 or len(yyyy) != 4:
-            print("Formato invalido, coloque o dia e o mes com dois digitos e o ano com quatro digitos, exemplo: 03/07/1970")
-            return
+            raise ValueError("Formato da data inválido, coloque o dia e o mês com dois dígitos e o ano com quatro dígitos. Exemplo: 03/07/1970")
         
         dd2 = int(dd)
         mm2 = int(mm)
@@ -86,20 +83,17 @@ class Data:
         flag1 = (dd2 >= 1 and dd2 <= 31)
         flag2 = (mm2 >= 1 and mm2 <= 12)
         if not flag1 or not flag2:
-            print("Data invalida")
-            return
+            raise ValueError("Data inválida")
         
         if mm2 == 2:
-            if yyyy2 % 4 == 0 and dd2 > 29:
-                print("Data invalida")
-                return
+            if yyyy2 % 4 == 0:
+                if dd2 > 29: raise ValueError(f"Data inválida")
             elif dd2 > 28:
-                print("Data invalida")
-                return
+                raise ValueError(f"Data inválida")
+            
         aux = [4,6,9,11]
         if (mm2 in aux) and dd2 == 31:
-            print("Data invalida")
-            return
+            raise ValueError("Data inválida")
         
         self.data = datetime.datetime(int(data[6:]), int(data[3:5]), int(data[:2]))
     

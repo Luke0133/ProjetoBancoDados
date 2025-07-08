@@ -150,7 +150,7 @@ CREATE TABLE TB_Feedback(
 
 CREATE TABLE TB_Local(
 	CodLocal serial PRIMARY KEY,
-	Nome varchar(100) NOT NULL UNIQUE,
+	Nome varchar(100) NOT NULL,
 	Tipo Tipo_Local NOT NULL,
 	Estado char(2) NOT NULL,
 	Municipio varchar(50) NOT NULL,
@@ -161,7 +161,7 @@ CREATE TABLE TB_Local(
 CREATE TABLE TB_Foto(
 	CodFoto serial PRIMARY KEY,
 	CodExt char(10) NOT NULL,
-	Descricao varchar(1000),
+	Descricao varchar(100),
 	Foto bytea NOT NULL
 );
 

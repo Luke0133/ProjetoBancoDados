@@ -98,4 +98,10 @@ def deletar_email(usuario, email):
 
 def find_historico(matricula):
     return db.get_historico(matricula)
-    
+
+def criar_curriculo(pdf,cpf):
+    db.update_curriculo(pdf,cpf) 
+
+def curriculo_usuario(cpf):
+    return db.get_curriculo(cpf)[0][3]
+

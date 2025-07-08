@@ -9,6 +9,7 @@ BEGIN
     ALTER SEQUENCE tb_materia_codmateria_seq RESTART WITH 1;
     ALTER SEQUENCE tb_curso_codcurso_seq RESTART WITH 1;
     ALTER SEQUENCE tb_local_codlocal_seq RESTART WITH 1;
+    ALTER SEQUENCE tb_feedback_codfeedback_seq RESTART WITH 1;
     -- Add others as needed...
 END;
 $$;
