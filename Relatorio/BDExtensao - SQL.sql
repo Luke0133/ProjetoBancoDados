@@ -123,7 +123,7 @@ CREATE TABLE TB_Extensao(
 	PublicoExterno varchar(500),
 	InicioRealizacao date NOT NULL,
 	FimRealizacao date NOT NULL,
-	CreatedAt timestamp DEFAULT CURRENT_TIMESTAMP
+	CriadoEm timestamp DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE TB_FeedbackPessoa(

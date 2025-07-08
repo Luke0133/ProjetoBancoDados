@@ -265,7 +265,8 @@ INSERT INTO TB_FeedbackPessoa(CodFeedback,CodPessoa) VALUES (15,'12908924072');
 INSERT INTO TB_FeedbackPessoa(CodFeedback,CodPessoa) VALUES (16,'62493605063');
 
 
-/*POPULAR FOTO*/
+
+
 
 SELECT * from tb_departamento;
 SELECT * from tb_curso;
