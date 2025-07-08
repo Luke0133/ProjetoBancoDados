@@ -49,10 +49,7 @@ def criar_extensao(codLocal, titulo, tipo, descricao, areaTematica, publicoInter
     comandoSQL(f"""CALL insert_extensao('{codLocal}', '{titulo}', '{tipo}', '{descricao}','{areaTematica}', {publicoInternoEstimado}, 
                {publicoExternoEstimado}, '{publicoInterno}', '{publicoExterno}', '{inicioRealizacao}' , '{fimRealizacao}', null, null)""")
     
-    return comandoSQL(f"""SELECT codext from tb_extensao where CodLocal = '{codLocal}' and Titulo = '{titulo}' and TipoAcao = '{tipo}' and
-                      Descricao = '{descricao}' and AreaTematica = '{areaTematica}' and PublicoInternoEst = {publicoInternoEstimado} and
-                      PublicoExternoEst = {publicoExternoEstimado} and PublicoInterno = '{publicoInterno}'and PublicoExterno = '{publicoExterno}'
-                      and InicioRealizacao = '{inicioRealizacao}' and FimRealizacao = '{fimRealizacao}'""")
+    return comandoSQL(f"""SELECT codext from tb_extensao ORDER BY CreatedAt DESC LIMIT 1;""")
 
 # Deleta extensão
 def deletar_extensao(codExt):
