@@ -206,11 +206,12 @@ def ver_extensao(extensao, usuario, mode = 'general'):
         else:
             print('\n')
         
-        choices = [Choice(value=1, name="Descrição"), Choice(value=2, name="Público Alvo"), Choice(value=9, name="Ver Situações da Extensão"), Choice(value=3, name="Ver Feedbacks"),
-                   Choice(value=4, name="Fazer Feedback"),Choice(value=10, name="Ver Fotos")]
+        choices = [Choice(value=1, name="Descrição"), Choice(value=2, name="Público Alvo"), Choice(value=9, name="Ver Situações da Extensão"),Choice(value=11, name="Ver Participantes") , 
+                   Choice(value=3, name="Ver Feedbacks"), Choice(value=4, name="Fazer Feedback"),Choice(value=10, name="Ver Fotos")]
         
         if (participacao := conEx.participacao(extensao,usuario))[0]:
             if participacao[1] == 'Coordenador(a)':
+                choices.append(Choice(value=5, name="Ver Inscrições"))
                 choices.append(Choice(value=6, name="Editar/Apagar Extensão"))
             elif participacao[1]:
                 choices.append(Choice(value=8, name="Sair da Extensão"))
@@ -231,6 +232,8 @@ def ver_extensao(extensao, usuario, mode = 'general'):
             case 0: return None
             case 3: uiExH.ver_feedbacks(extensao)
             case 4: msg = uiExH.fazer_feedback(extensao, usuario)
+            case 5: msg = participantes_extensao(extensao,mode='edição')
+            case 11: participantes_extensao(extensao,mode='ver')
             case 6: # Editar/Apagar extensão
                 existe_extensao, msg = editar_extensao(extensao,id)
                 if not existe_extensao: return msg  # Se extensão não existir mais, retorna falso
@@ -485,3 +488,120 @@ def editar_extensao(extensao,id):
             case _: pass
 
 
+def participantes_extensao(extensao,mode = 'ver'):
+    mode_text = f"{Fore.YELLOW}(Ver Participantes)" if mode == 'ver' else f"{Fore.YELLOW}(Ver Inscrições)"
+    err, msg = None, None
+    n = 0
+    while(True):
+        os.system('cls')
+        print(Fore.CYAN + banner)
+        print(Fore.CYAN + "=" * terminal_width)
+        if msg:
+            print(f'{Fore.LIGHTGREEN_EX}{msg}')
+            msg = None
+        if err:
+            print(f'{Fore.RED}{err}')
+            err = None
+            
+
+        if mode == 'ver':
+            participantes = {'docente' : conEx.find_participacoes_deferido(extensao,user.Docente())}
+            participantes['aluno'] = conEx.find_participacoes_deferido(extensao,user.Aluno())
+            participantes['pessoa'] = conEx.find_participacoes_deferido(extensao,user.Pessoa())
+        else: 
+            participantes = {'docente' : conEx.find_participacoes_espera(extensao,user.Docente())}
+            participantes['aluno'] = conEx.find_participacoes_espera(extensao,user.Aluno())
+            participantes['pessoa'] = conEx.find_participacoes_espera(extensao,user.Pessoa())
+
+        n_aluno = len(participantes['aluno'])
+        n_docente = len(participantes['docente'])
+        n_pessoa = len(participantes['pessoa'])
+        n_participantes = n_aluno + n_docente + n_pessoa
+        ok = True if not n_participantes == 0 else False
+
+
+        if ok:
+            nTotal = math.ceil(n_participantes/PERPAGE)
+            msg_text = f"{Fore.YELLOW}Extensão {extensao.getCodExt()} -- Página {n+1}/{nTotal}"
+            line = msg_text + (" " * (terminal_width - len(mode_text) - len(msg_text))) + mode_text
+        else:
+            line = mode_text.rjust(terminal_width)
+
+        print(line)
+
+        choices = []
+        if ok:
+            show = PERPAGE if (n*PERPAGE + PERPAGE) < n_participantes else n_participantes - n*PERPAGE
+            if not mode == 'ver':
+                for i in range(show):
+                    value = i + n*PERPAGE
+                    if value < n_docente:
+                        participante = participantes['docente'][value]
+                        choices.append(Choice(value= value + 4, name=f"{value + 1}. {conUser.get_usuario(participante['coddocente']).getNome():<60}  ||  Docente"))
+                    elif value >= n_docente and i < n_docente+ n_aluno:
+                        participante = participantes['aluno'][value - n_docente]
+                        choices.append(Choice(value=value + 4, name=f"{value + 1}. {conUser.get_usuario(participante['codaluno']).getNome():<60}  ||  Aluno(a)"))
+                    elif value >= n_docente+ n_aluno:
+                        participante = participantes['pessoa'][value - n_docente - n_aluno]
+                        if i == show - 1:    
+                            choices.append(Choice(value=value + 4, name=f"{value + 1}. {conUser.get_usuario(participante['codpessoa']).getNome():<60}  ||  Pessoa Externa\n"))
+                        else:    
+                            choices.append(Choice(value=value + 4, name=f"{value + 1}. {conUser.get_usuario(participante['codpessoa']).getNome():<60}  ||  Pessoa Externa"))
+            else:
+                for i in range(show):
+                    value = i + n*PERPAGE
+                    if value < n_docente:
+                        participante = participantes['docente'][value]
+                        print(f"{value + 1}. {conUser.get_usuario(participante['coddocente']).getNome():<60}  ||  {participante['funcao']}")
+                    elif i >= n_docente and i < n_docente+ n_aluno:
+                        participante = participantes['aluno'][value - n_docente + n*PERPAGE]
+                        print(f"{value + 1}. {conUser.get_usuario(participante['codaluno']).getNome():<60}  ||  {participante['funcao']}")
+                    elif i >= n_docente+ n_aluno:
+                        participante = participantes['pessoa'][value - n_docente - n_aluno]
+                        print(f"{value + 1}. {conUser.get_usuario(participante['codpessoa']).getNome():<60}  ||  {participante['funcao']}")
+        else:
+            if mode == 'ver': print("Não há ninguém nessa extensão")
+            else: print("Não há pedidos de inscrição para essa extensão")
+
+        if n > 0:
+            choices.append(Choice(value=3, name="(<) PREV"))
+        if (n*PERPAGE + PERPAGE) < n_participantes:
+            choices.append(Choice(value=2, name="NEXT (>)"))
+
+        choices.append(Choice(value=0, name="Voltar"))
+
+        query = "Selecione uma ação" if mode == 'ver' else "Escolha alguém para incluir no projeto ou selecione uma ação"
+        choice = inquirer.select(
+            message= query,
+            choices= choices,
+            qmark="",
+            pointer=">"
+        ).execute()
+
+        match choice:
+            case 0: return None
+            case 2: n+=1
+            case 3: n-=1
+            case _:
+                value = choice - 4
+                if value < n_docente:
+                    participante = participantes['docente'][value]
+                    docente = conUser.get_usuario(participante['coddocente'])
+                    try: 
+                        conEx.atualizar_participacao(extensao,docente,'Docente Auxiliar','Deferido')
+                        return 'Docente aceito na extensão!'
+                    except (ValueError,Exception) as e: err = e
+                elif value >= n_docente and i < n_docente+ n_aluno:
+                    participante = participantes['aluno'][value - n_docente]
+                    aluno = conUser.get_usuario(participante['codaluno'])
+                    try: 
+                        conEx.atualizar_participacao(extensao,aluno,'Aluno(a) Voluntário(a)','Deferido')
+                        return 'Aluno(a) aceito(a) na extensão!'
+                    except (ValueError,Exception) as e: err = e
+                elif value >= n_docente+ n_aluno:
+                    participante = participantes['pessoa'][value - n_docente - n_aluno]
+                    pessoa = conUser.get_usuario(participante['codpessoa'])
+                    try: 
+                        conEx.atualizar_participacao(extensao,pessoa,'Pessoa Externa','Deferido')
+                        return 'Pessoa aceita na extensão!'
+                    except (ValueError,Exception) as e: err = e

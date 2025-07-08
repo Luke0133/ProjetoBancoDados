@@ -4,6 +4,7 @@ from classes import extensao as ex
 
 import datetime
 
+# Cria ou atualiza uma extensão
 def criar_atualizar_extensao(extensao, mode = 'criar'):
     if mode == 'criar':
         return db.criar_extensao(extensao.getCodLocal(), extensao.getTitulo(), extensao.getTipoAcao(), extensao.getDescricao(), extensao.getAreaTematica(), 
@@ -13,6 +14,8 @@ def criar_atualizar_extensao(extensao, mode = 'criar'):
         db.atualizar_extensao(extensao.getCodExt(), extensao.getCodLocal(), extensao.getTitulo(), extensao.getTipoAcao(), extensao.getDescricao(), extensao.getAreaTematica(), 
                           extensao.getPublicoInternoEst(),extensao.getPublicoExternoEst(),extensao.getPublicoInterno(), extensao.getPublicoExterno(),
                           extensao.getInicioRealizacao().getData(), extensao.getFimRealizacao().getData())
+        
+# Retorna todas as extensões do sistema
 def find_extensoes():
     extensoesExistentes = db.get_extensoes()
     for i in range(len(extensoesExistentes)):
@@ -22,6 +25,7 @@ def find_extensoes():
                                              extensoesExistentes[i]['publicoexterno'], extensoesExistentes[i]['iniciorealizacao'], extensoesExistentes[i]['fimrealizacao'])   
     return extensoesExistentes
 
+# Retorna uma extensão
 def find_extensao(codext):
     extensao = db.get_extensao(codext)
     if extensao:
@@ -31,6 +35,7 @@ def find_extensao(codext):
                                              extensao[0]['publicoexterno'], extensao[0]['iniciorealizacao'], extensao[0]['fimrealizacao'])   
     return extensao
 
+# Retorna extensões de um usuário
 def find_my_extensoes(usuario):
     # Verifica qual é o tipo do usuário para inseri-lo na respectiva tabela
     if isinstance(usuario, user.Aluno):
@@ -47,6 +52,7 @@ def find_my_extensoes(usuario):
                                              extensoesExistentes[i]['publicoexterno'], extensoesExistentes[i]['iniciorealizacao'], extensoesExistentes[i]['fimrealizacao'])   
     return extensoesExistentes
 
+# Retorna informações sobre extensão
 def get_info_ext(extensao, usuario = None, mode = 'general'):
     info = db.get_infoextensao(extensao.getCodExt())
     info = {'codext':info[0]['codext'], 'titulo':info[0]['titulo'],'tipoacao':info[0]['tipoacao'],'departamento':info[0]['departamento'], 'coordenador':info[0]['coordenador']}
@@ -80,6 +86,7 @@ def criar_foto(foto,codExt,desc):
     db.inserir_foto(codExt,desc,foto)
 def find_fotos(codExt):
     return db.get_fotos(codExt)
+
 
 def participacao(extensao,usuario):
     if isinstance(usuario, user.Aluno):
@@ -120,6 +127,26 @@ def atualizar_participacao(extensao,usuario,funcao,situacao):
     elif isinstance(usuario, user.Pessoa):
         db.update_funcao_pessoa(extensao.getCodExt(),usuario.getCpf(),funcao,situacao)
     return
+
+def find_participacoes_deferido(extensao,usuario):
+    codExt = extensao.getCodExt()
+    if isinstance(usuario, user.Aluno):
+        return db.get_funcoes_aluno_deferido(codExt)
+    elif isinstance(usuario, user.Docente):
+        return db.get_funcoes_docente_deferido(codExt)
+    elif isinstance(usuario, user.Pessoa):
+        return db.get_funcoes_pessoa_deferido(codExt)
+    return None
+
+def find_participacoes_espera(extensao,usuario):
+    codExt = extensao.getCodExt()
+    if isinstance(usuario, user.Aluno):
+        return db.get_funcoes_aluno_espera(codExt)
+    elif isinstance(usuario, user.Docente):
+        return db.get_funcoes_docente_espera(codExt)
+    elif isinstance(usuario, user.Pessoa):
+        return db.get_funcoes_pessoa_espera(codExt)
+    return None
 
 def find_local(codLocal):
     local = db.get_local(codLocal)

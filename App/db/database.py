@@ -100,6 +100,22 @@ def get_funcao_docente(codExt,matricula):
 def get_funcao_pessoa(codExt,cpf):
     return comandoSQL(f"SELECT * FROM tb_funcaopessoa WHERE CodExt = '{codExt}' AND CodPessoa = '{cpf}'")
 
+# Procuram funções de participantes ativos de uma extensão
+def get_funcoes_aluno_deferido(codExt):
+    return comandoSQL(f"SELECT * FROM tb_funcaoaluno WHERE CodExt = '{codExt}' AND EstadoInscricao = 'Deferido' ")
+def get_funcoes_docente_deferido(codExt):
+    return comandoSQL(f"SELECT * FROM tb_funcaodocente WHERE CodExt = '{codExt}' AND EstadoInscricao = 'Deferido'")
+def get_funcoes_pessoa_deferido(codExt):
+    return comandoSQL(f"SELECT * FROM tb_funcaopessoa WHERE CodExt = '{codExt}' AND EstadoInscricao = 'Deferido'")
+
+# Procuram funções de participantes ativos de uma extensão
+def get_funcoes_aluno_espera(codExt):
+    return comandoSQL(f"SELECT * FROM tb_funcaoaluno WHERE CodExt = '{codExt}' AND EstadoInscricao = 'Em Espera' ")
+def get_funcoes_docente_espera(codExt):
+    return comandoSQL(f"SELECT * FROM tb_funcaodocente WHERE CodExt = '{codExt}' AND EstadoInscricao = 'Em Espera'")
+def get_funcoes_pessoa_espera(codExt):
+    return comandoSQL(f"SELECT * FROM tb_funcaopessoa WHERE CodExt = '{codExt}' AND EstadoInscricao = 'Em Espera'")
+
 # Apagam função do usuário
 def deletar_funcao_aluno(codExt,matricula):
     return comandoSQL(f"DELETE FROM tb_funcaoaluno WHERE CodExt = '{codExt}' AND CodAluno = '{matricula}'")
