@@ -7,7 +7,4 @@ Feito por:
 - Luca Heringer Megiorin - 231003390
 
 
-pip install pyfiglet
-pip install rich
- pip install psutil
-pip install inquirerpy
+Views e materiais do relatório podem ser vistos na pasta Relatório
